@@ -157,8 +157,12 @@ void shift(const char *src,
            const int alphabet_len,
            const int *hashmap) {
    
-   for(int i = 0; src[i] != '\0'; ++i)
-      dst[i] = alphabet[(hashmap[(int)(src[i])] + offset) % alphabet_len];
+   for(int i = 0; src[i] != '\0'; ++i) {
+      if(offset > 0)
+         dst[i] = alphabet[(hashmap[(int) (src[i])] + offset) % alphabet_len];
+      else
+         dst[i] = alphabet[(hashmap[(int)(src[i])] + (alphabet_len + offset)) % alphabet_len];
+   }
 }
 
 // create a zero-terminated string
