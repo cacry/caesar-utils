@@ -18,7 +18,7 @@ int read_offset() {
    int offset;
    printf("Enter shift offset:\n");
    if(scanf("%d", &offset) != 1) { // TODO -1 offset test
-      fprintf(stderr, "Error: Unacceptable offset!\n");
+      fprintf(stderr, "Error: Incorrect offset!\n");
       exit(102);
    }
    return offset;
@@ -161,7 +161,7 @@ void shift(const char *src,
       if(offset > 0)
          dst[i] = alphabet[(hashmap[(int) (src[i])] + offset) % alphabet_len];
       else
-         dst[i] = alphabet[(hashmap[(int)(src[i])] + (alphabet_len + offset)) % alphabet_len];
+         dst[i] = alphabet[(hashmap[(int) (src[i])] + (alphabet_len + offset)) % alphabet_len];
    }
 }
 
@@ -175,12 +175,13 @@ char *alloc_str(int length) {
 }
 
 // find the most similar string
-char *solve_caesar(const char *result,
-                   const char *intercepted,
-                   const int is_different_strings_length,
-                   const char *alphabet,
-                   const int alphabet_len,
-                   const int *hashmap) {
+int solve_caesar(const char *result,
+                 const char *intercepted,
+                 const int is_different_strings_length,
+                 const char *alphabet,
+                 const int alphabet_len,
+                 const int *hashmap,
+                 char **results) {
    
    char *shifted_str;
    int result_len = len_str(result);
@@ -189,7 +190,9 @@ char *solve_caesar(const char *result,
    shifted_str = alloc_str(result_len);
    
    int min_difference = INT_MAX;
-   int min_difference_offset = INT_MAX;
+   int *possible_offsets = malloc(alphabet_len * sizeof(int));
+   CHECK_ALLOC(possible_offsets)
+   int possible_offsets_count = 0;
    
    for(int offset = 0; offset < alphabet_len; offset++) {
       int current_difference;
@@ -210,15 +213,29 @@ char *solve_caesar(const char *result,
          }
       }
       
-      if(current_difference <= min_difference) {
+      if(current_difference < min_difference) {
          min_difference = current_difference;
-         min_difference_offset = offset;
+         possible_offsets[0] = offset;
+         possible_offsets_count = 1;
+      }
+      else {
+         if(current_difference == min_difference) {
+            possible_offsets[possible_offsets_count] = offset;
+            possible_offsets_count++;
+         }
       }
    }
    
-   //get original string
-   shift(result, shifted_str, min_difference_offset, alphabet, alphabet_len, hashmap);
-   return shifted_str;
+   //get all the possible original strings
+   for(int i = 0; i < possible_offsets_count; ++i) {
+      results[i] = alloc_str(result_len);
+      shift(result, results[i], possible_offsets[i], alphabet, alphabet_len, hashmap);
+   }
+   
+   free(shifted_str);
+   free(possible_offsets);
+   
+   return possible_offsets_count;
 }
 
 // create a hashmap, where hash[ascii] == index in the alphabet
@@ -238,14 +255,15 @@ int *create_alphabet_hashmap(const char *alphabet,
    return hashmap;
 }
 
-void print_help(FILE *out_stream, char *argv[]) {
-   fprintf(out_stream, "Usage: %s [-sehavc]\n"
-                       "-s Decode caesar cipher with different length or shifted strings.\n"
-                       "-e Encrypt text at offset n.\n"
-                       "-c Use custom alphabet (default: a-Z0-9).\n"
-                       "-h Print this message.\n"
-                       "-a Print all the possible variants.\n"
-                       "-v Print debug information.\n", // output Levenshtein distance debug info
+void print_help(FILE *s, char *argv[]) {
+   fprintf(s, "Usage: %s [-sehavc]\n"
+              "default: decode Caesar cipher knowing original message with some replaced symbols.\n"
+              "-s Decode Caesar cipher knowing substring of the original string.\n"
+              "-e Encrypt text at offset n.\n"
+              "-c Use custom alphabet (default: a-Z0-9).\n"
+              "-a Print all the possible variants.\n"
+              "-h Print this message.\n"
+              "-v Print debug information.\n", // output Levenshtein distance debug info
            argv[0]);
 }
 
@@ -260,10 +278,12 @@ int main(int argc, char *argv[]) {
    
    while((opt = getopt(argc, argv, "sehavc")) != -1) {
       switch(opt) {
-         case 'c': // checking if custom alphabet option has been set and continue
+         case 'c':
             is_custom_alphabet = 1;
-         case 'v': // checking if debug option has been set and continue
+            break;
+         case 'v':
             DEBUG_OUTPUT = 2;
+            break;
          case 'a':
             DEBUG_OUTPUT = 1;
             break;
@@ -288,37 +308,50 @@ int main(int argc, char *argv[]) {
    
    
    char *str1;
-   int len_str1 = read_str(&str1, "Enter the encrypted string:\n");
    
-   char *ans;
+   char **possible_variants = malloc(sizeof(char *) * alphabet_len);
+   int variants_count;
    if(mode != ENCRYPT_MODE) {
+      int len_str1 = read_str(&str1, "Enter the encrypted string:\n");
       char *str2;
       if(DEBUG_OUTPUT == 1) {
          str2 = str1;
-      } else {
-         int len_str2 = read_str(&str2, "Enter part of the original string:\n");
-         if(mode == SHIFTED_MODE && len_str1 != len_str2) {
-            fprintf(stderr, "Error: The lengths of the two strings are different.\n"
-                            "If it is intended, use -s instead.");
-            exit(101);
+      }
+      else {
+         if(mode == SHIFTED_MODE)
+            read_str(&str2, "Enter the corrupted part or substring of the original string:\n");
+         else {
+            int len_str2 = read_str(&str2, "Enter the corrupted original string:\n");
+            if(len_str1 != len_str2) {
+               fprintf(stderr, "Error: The lengths of the two strings are different.\n"
+                               "If it was intended, use -s instead.");
+               exit(101);
+            }
          }
       }
       
-      ans = solve_caesar(str1, str2, mode, alphabet, alphabet_len, hashmap);
+      variants_count = solve_caesar(str1, str2, mode, alphabet, alphabet_len, hashmap, possible_variants);
       free(str2);
-   } else {
+   }
+   else {
+      int len_str1 = read_str(&str1, "Enter the original string to encrypt:\n");
       int offset = read_offset();
-      ans = alloc_str(len_str1);
-      
-      shift(str1, ans, offset, alphabet, alphabet_len, hashmap);
+      possible_variants[0] = alloc_str(len_str1);
+      variants_count = 1;
+      shift(str1, possible_variants[0], offset, alphabet, alphabet_len, hashmap);
    }
    
    free(hashmap);
    if(DEBUG_OUTPUT != 1) { // str1 == str2 in -a case
       free(str1);
-      print_str(ans);
+      while(variants_count--) {
+         print_str(possible_variants[variants_count]);
+         free(possible_variants[variants_count]);
+      }
    }
-   free(ans);
+   if(is_custom_alphabet)
+      free(alphabet);
+   free(possible_variants);
    
    return 0;
 }
