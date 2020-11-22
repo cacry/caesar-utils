@@ -158,7 +158,7 @@ void shift(const char *src,
            const int *hashmap) {
    
    for(int i = 0; src[i] != '\0'; ++i) {
-      if(offset > 0)
+      if(offset >= 0)
          dst[i] = alphabet[(hashmap[(int) (src[i])] + offset) % alphabet_len];
       else
          dst[i] = alphabet[(hashmap[(int) (src[i])] + (alphabet_len + offset)) % alphabet_len];
@@ -247,11 +247,11 @@ int *create_alphabet_hashmap(const char *alphabet,
    for(int i = 0; i < alphabet_len; ++i)
       max_ascii_code = MAX(max_ascii_code, (short) (alphabet[i]));
    
-   int *hashmap = malloc(MAX(max_ascii_code + 1, 1)); // assure the compiler
+   int *hashmap = malloc(sizeof(int)*(max_ascii_code + 1));
    CHECK_ALLOC(hashmap)
    
    for(int i = 0; i < alphabet_len; ++i)
-      hashmap[(int) (alphabet[i])] = i;
+      hashmap[alphabet[i]] = i;
    
    return hashmap;
 }
@@ -345,7 +345,7 @@ int main(int argc, char *argv[]) {
    free(hashmap);
    if(DEBUG_OUTPUT != 1) { // str1 == str2 in -a case
       free(str1);
-      while(variants_count--) {
+      for(int i = 0; i < variants_count; ++i){
          print_str(possible_variants[variants_count]);
          free(possible_variants[variants_count]);
       }
