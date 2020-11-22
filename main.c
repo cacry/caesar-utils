@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
    enum {
       SAME_LENGTH_MODE, SHIFTED_MODE, ENCRYPT_MODE
    } mode = SAME_LENGTH_MODE;
-   char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890\0";
+   char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890";
    short alphabet_len = len_str(alphabet);
    int is_custom_alphabet = 0;
    
@@ -345,8 +345,10 @@ int main(int argc, char *argv[]) {
    free(hashmap);
    if(DEBUG_OUTPUT != 1) { // str1 == str2 in -a case
       free(str1);
+      if(!variants_count)
+         printf("There is no any valid string.\n");
       for(int i = 0; i < variants_count; ++i){
-         print_str(possible_variants[variants_count]);
+         print_str(possible_variants[i]);
          free(possible_variants[variants_count]);
       }
    }
