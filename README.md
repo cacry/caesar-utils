@@ -17,7 +17,7 @@ default: decode Caesar cipher knowing original message with some replaced symbol
 -v Print debug information.
 ```
 &nbsp;
-## Download && build
+## Download && Build
 
 ```
 git clone https://github.com/cacry/caesar-utils
@@ -41,7 +41,7 @@ efbecffg
 Enter the corrupted original string:
 somebeef
 ```
- ** ->**
+ **->**
 `deadbeef`
 
 &nbsp;
@@ -53,7 +53,7 @@ Enter the custom alphabet:
 Enter the encrypted string:
 23
 ```
- ** ->**
+ **->**
 `23`
 `34`
 `41`
@@ -68,7 +68,7 @@ mkoCkB
 Enter the corrupted part or substring of the original string:
 aes
 ```
- ** ->**
+ **->**
 `caesar`
 
 &nbsp;
@@ -82,7 +82,7 @@ secret
 Enter shift offset:
 2
 ```
- ** ->**
+ **->**
 `ugetgv`
 
 &nbsp;
