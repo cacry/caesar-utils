@@ -3,11 +3,11 @@
 ## Description
 
 Customizable Caesar cipher encrypting/decrypting CLI tool written in C.
-Supports custom dictionaries, finding the correct variant by the known part of a string (implemented using [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) and [Wagner–Fischer](https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm) algorithm).
+Supports custom dictionaries, finding the correct variant by the known part of a string (implemented using [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) and [Wagner-Fischer](https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm) algorithm).
 &nbsp;
 ## Usage
 ```
-usage: ./caesar-utils [-sehavc]
+usage: ./caesar-utils [-h] [-sae] [-c] [-v]
 
 default: decode Caesar cipher knowing original message with some replaced symbols.
 -s Decode Caesar cipher knowing substring of the original string.
@@ -90,4 +90,4 @@ Enter shift offset:
 
 &nbsp;
 ## License
-- [MIT]((https://github.com/cacry/caesar-utils/blob/main/license))
+- [MIT](https://github.com/cacry/caesar-utils/blob/main/LICENSE)
