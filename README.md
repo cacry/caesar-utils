@@ -34,7 +34,7 @@ chmod +x test.sh
 &nbsp;
 ## Examples
 
- `./caesar-utils`
+- `./caesar-utils`
 ```
 Enter the encrypted string:
 efbecffg
@@ -46,7 +46,7 @@ somebeef
 
 &nbsp;
 
- `./caesar-utils -a -c`
+- `./caesar-utils -a -c`
 ```
 Enter the custom alphabet:
 1234
@@ -75,7 +75,7 @@ aes
 
 &nbsp;
 
- `./caesar-utils -e -c`
+- `./caesar-utils -e -c`
 ```
 Enter the custom alphabet:
 abcdefghijklmnopqrstuvwxyz
