@@ -1,3 +1,4 @@
+[![Build][build-badge]][build]
 # Caesar utils
 ## Description
 
