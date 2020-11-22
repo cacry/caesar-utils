@@ -242,7 +242,7 @@ int solve_caesar(const char *result,
 // create a hashmap, where hash[ascii] == index in the alphabet
 int *create_alphabet_hashmap(const char *alphabet,
                              const short alphabet_len) {
-   short max_ascii_code = SHRT_MIN;
+   short max_ascii_code = 0;
    
    for(int i = 0; i < alphabet_len; ++i)
       max_ascii_code = MAX(max_ascii_code, (short) (alphabet[i]));
@@ -251,7 +251,7 @@ int *create_alphabet_hashmap(const char *alphabet,
    CHECK_ALLOC(hashmap)
    
    for(int i = 0; i < alphabet_len; ++i)
-      hashmap[alphabet[i]] = i;
+      hashmap[(short)alphabet[i]] = i;
    
    return hashmap;
 }

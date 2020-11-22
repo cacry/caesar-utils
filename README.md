@@ -1,4 +1,4 @@
-[![Build][build-badge]][build]
+[![Build Status](https://travis-ci.com/cacry/caesar-utils.svg?branch=main)](https://travis-ci.com/cacry/caesar-utils)
 # Caesar utils
 ## Description
 
