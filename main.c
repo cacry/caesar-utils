@@ -26,16 +26,16 @@ int read_offset() {
 
 
 // get the length of the string
-int len_str(const char *str) {
-   int len = -1;
+short len_str(const char *str) {
+   short len = -1;
    while(str[++len] != '\0')
       continue;
    return len;
 }
 
 // read dynamically allocated string from the input stream
-int read_str(char **dst, const char *message) {
-   int str_len = 0,
+short read_str(char **dst, const char *message) {
+   short str_len = 0,
          allocated = 10;
    *dst = malloc(allocated);
    CHECK_ALLOC(*dst)
@@ -179,7 +179,7 @@ int solve_caesar(const char *result,
                  const char *intercepted,
                  const int is_different_strings_length,
                  const char *alphabet,
-                 const int alphabet_len,
+                 const short alphabet_len,
                  const int *hashmap,
                  char **results) {
    
@@ -190,7 +190,7 @@ int solve_caesar(const char *result,
    shifted_str = alloc_str(result_len);
    
    int min_difference = INT_MAX;
-   int *possible_offsets = malloc(alphabet_len * sizeof(int));
+   int *possible_offsets = malloc(MAX(alphabet_len + 1, 1) * sizeof(int)); // assure the compiler
    CHECK_ALLOC(possible_offsets)
    int possible_offsets_count = 0;
    
@@ -204,7 +204,8 @@ int solve_caesar(const char *result,
       else
          current_difference = compare_str(intercepted, shifted_str, result_len);
       if(DEBUG_OUTPUT) {
-         printf("Offset %d: ", offset);
+         if(DEBUG_OUTPUT == 2)
+            printf("Offset %d: ", offset);
          print_str(shifted_str);
          if(DEBUG_OUTPUT == 2) {
             printf(" original string: ");
@@ -240,13 +241,13 @@ int solve_caesar(const char *result,
 
 // create a hashmap, where hash[ascii] == index in the alphabet
 int *create_alphabet_hashmap(const char *alphabet,
-                             const int alphabet_len) {
-   int max_ascii_code = INT_MIN;
+                             const short alphabet_len) {
+   short max_ascii_code = SHRT_MIN;
    
    for(int i = 0; i < alphabet_len; ++i)
-      max_ascii_code = MAX(max_ascii_code, (int) (alphabet[i]));
+      max_ascii_code = MAX(max_ascii_code, (short) (alphabet[i]));
    
-   int *hashmap = malloc(sizeof(int) * (max_ascii_code + 1));
+   int *hashmap = malloc(MAX(max_ascii_code + 1, 1)); // assure the compiler
    CHECK_ALLOC(hashmap)
    
    for(int i = 0; i < alphabet_len; ++i)
@@ -272,8 +273,8 @@ int main(int argc, char *argv[]) {
    enum {
       SAME_LENGTH_MODE, SHIFTED_MODE, ENCRYPT_MODE
    } mode = SAME_LENGTH_MODE;
-   char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890";
-   int alphabet_len = len_str(alphabet);
+   char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890\0";
+   short alphabet_len = len_str(alphabet);
    int is_custom_alphabet = 0;
    
    while((opt = getopt(argc, argv, "sehavc")) != -1) {
