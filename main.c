@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <string.h>
 #include <stdlib.h>
 
 #include <limits.h>
@@ -24,15 +24,6 @@ int read_offset() {
    return offset;
 }
 
-
-// get the length of the string
-short len_str(const char *str) {
-   short len = -1;
-   while(str[++len] != '\0')
-      continue;
-   return len;
-}
-
 // read dynamically allocated string from the input stream
 short read_str(char **dst, const char *message) {
    short str_len = 0,
@@ -40,7 +31,7 @@ short read_str(char **dst, const char *message) {
    *dst = malloc(allocated);
    CHECK_ALLOC(*dst)
    
-   const int message_len = len_str(message);
+   const int message_len = strlen(message);
    printf("%.*s", message_len, message);
    fflush(stdout);
    
@@ -184,8 +175,8 @@ int solve_caesar(const char *result,
                  char **results) {
    
    char *shifted_str;
-   int result_len = len_str(result);
-   int intercepted_len = len_str(intercepted);
+   int result_len = strlen(result);
+   int intercepted_len = strlen(intercepted);
    
    shifted_str = alloc_str(result_len);
    
@@ -206,10 +197,10 @@ int solve_caesar(const char *result,
       if(DEBUG_OUTPUT) {
          if(DEBUG_OUTPUT == 2)
             printf("Offset %d: ", offset);
-         print_str(shifted_str);
+         printf("%s\n", shifted_str);
          if(DEBUG_OUTPUT == 2) {
             printf(" original string: ");
-            print_str(intercepted);
+            printf("%s\n", intercepted);
             printf(" > %d different letters\n", current_difference);
          }
       }
@@ -274,7 +265,7 @@ int main(int argc, char *argv[]) {
       SAME_LENGTH_MODE, SHIFTED_MODE, ENCRYPT_MODE
    } mode = SAME_LENGTH_MODE;
    char *alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890";
-   short alphabet_len = len_str(alphabet);
+   short alphabet_len = strlen(alphabet);
    int is_custom_alphabet = 0;
    
    while((opt = getopt(argc, argv, "sehavc")) != -1) {
@@ -348,7 +339,7 @@ int main(int argc, char *argv[]) {
       if(!variants_count)
          printf("There is no any valid string.\n");
       for(int i = 0; i < variants_count; ++i){
-         print_str(possible_variants[i]);
+         printf("%s\n", possible_variants[i]);
          free(possible_variants[variants_count]);
       }
    }
