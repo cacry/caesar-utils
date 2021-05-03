@@ -21,7 +21,7 @@ default: decode Caesar cipher knowing original message with some replaced symbol
 ## Download && Build
 
 ```
-git clone https://github.com/cacry/caesar-utils
+git clone https://github.com/nightshiba/caesar-utils
 cd caesar-utils
 cmake .
 make
@@ -90,4 +90,4 @@ Enter shift offset:
 
 &nbsp;
 ## License
-- [MIT](https://github.com/cacry/caesar-utils/blob/main/LICENSE)
+- [MIT](https://github.com/nightshiba/caesar-utils/blob/main/LICENSE)
